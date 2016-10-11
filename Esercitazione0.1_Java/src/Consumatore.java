@@ -2,13 +2,18 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Consumatore {
 	public static void main(String[] args) {
-		FileReader r = null;
-		int x,i,j=args[1].length(); char ch; String str="";boolean flag=true;
+		InputStreamReader r = null;
+		int x,i,npar=args.length,j=args[npar-1].length(); char ch; String str="";boolean flag=true;
 		try {
-			r = new FileReader(args[0]);
+			if(npar==2)
+				r = new FileReader(args[0]);
+			if(npar==1)
+				r = new InputStreamReader(System.in);	
+				
 		} catch(FileNotFoundException e){
 			System.out.println("File non trovato");
 			System.exit(1);
@@ -22,7 +27,7 @@ public class Consumatore {
 					if(str.length()>=j){
 						for(i=0;i<j;i++)
 						{
-							if(str.charAt(i)!=args[1].charAt(i))
+							if(str.charAt(i)!=args[npar-1].charAt(i))
 							{
 								flag=false;
 							}
