@@ -1,0 +1,4 @@
+Questo è
+il contenuto file
+di file 2
+Questa la fine.
