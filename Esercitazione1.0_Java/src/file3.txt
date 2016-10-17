@@ -1,5 +1,0 @@
-Questo è
-il contenuto file.
-di file 3
-Questa la fine
-di file3.
