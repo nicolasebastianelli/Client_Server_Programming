@@ -26,8 +26,8 @@ char carattere;
 
 int main(int argc, char *argv[])
 {
-	int sd, port, fd_sorg, fd_dest, nread, len;
-	char buff[DIM_MAX_STRINGA_CLIENT],car,c;
+	int sd, port, nread, len;
+	char buff[DIM_MAX_STRINGA_CLIENT],c;
 	struct hostent *host;
 	struct sockaddr_in servaddr;
 	struttura1 str1;
@@ -72,45 +72,45 @@ int main(int argc, char *argv[])
 	/* CORPO DEL CLIENT:
 	ciclo di accettazione di richieste da utente ------- */
 
-		/* CREAZIONE SOCKET ------------------------------------ */
-		sd=socket(AF_INET, SOCK_STREAM, 0);
-		if(sd<0) {perror("apertura socket"); exit(1);}
-		printf("Client: creata la socket sd=%d\n", sd);
+	/* CREAZIONE SOCKET ------------------------------------ */
+	sd=socket(AF_INET, SOCK_STREAM, 0);
+	if(sd<0) {perror("apertura socket"); exit(1);}
+	printf("Client: creata la socket sd=%d\n", sd);
 
-		/* Operazione di BIND implicita nella connect */
-		if(connect(sd,(struct sockaddr *) &servaddr, sizeof(struct sockaddr))<0)
-		{perror("connect"); exit(1);}
-		printf("Client: connect ok\n");
+	/* Operazione di BIND implicita nella connect */
+	if(connect(sd,(struct sockaddr *) &servaddr, sizeof(struct sockaddr))<0)
+	{perror("connect"); exit(1);}
+	printf("Client: connect ok\n");
 
-		/*INVIO File*/
-		str1.carattere='a';
-		str1.intero=1;
-		strcpy(buff,"prova1");
-		strcpy(str1.stringa,buff);
-		str2.carattere='b';
-		str2.intero=2;
-		strcpy(buff,"prova2");
-		len=strlen(buff) +1;
-		str2.stringa=(char*)malloc(sizeof(char)*len);
-		strcpy(str2.stringa,buff);
+	/*INVIO File*/
+	str1.carattere='a';
+	str1.intero=1;
+	strcpy(buff,"prova1");
+	strcpy(str1.stringa,buff);
+	str2.carattere='b';
+	str2.intero=2;
+	strcpy(buff,"prova2");
+	len=strlen(buff) +1;
+	str2.stringa=(char*)malloc(sizeof(char)*len);
+	strcpy(str2.stringa,buff);
 
-		printf("Client: invio struttura1\n");
-		write(sd,&str1,sizeof(str1));
+	printf("Client: invio struttura1\n");
+	write(sd,&str1,sizeof(str1));
 
-		printf("Client: invio struttura2\n");
-		write(sd,&str2.carattere,sizeof(char));
-		write(sd,&str2.intero,sizeof(int));
-		write(sd,&len,sizeof(int));
-		write(sd,str2.stringa,len);
-		free(str2.stringa);
+	printf("Client: invio struttura2\n");
+	write(sd,&str2.carattere,sizeof(char));
+	write(sd,&str2.intero,sizeof(int));
+	write(sd,&len,sizeof(int));
+	write(sd,str2.stringa,len);
+	free(str2.stringa);
+	printf("Inserire stringa, EOF per terminare: \n");
+	while (fgets(buff,DIM_MAX_STRINGA_CLIENT,stdin)){
+		while(getchar() != '\n'){}
+		buff[strcspn(buff,"\n")]= '\0';
+		printf("Client: invio stringa %s\n",buff);
+		write(sd,buff,sizeof(buff));
 		printf("Inserire stringa, EOF per terminare: \n");
-		while (fgets(buff,DIM_MAX_STRINGA_CLIENT,stdin)){
-			while(getchar() != '\n'){}
-			buff[strcspn(buff,"\n")]= '\0';
-			printf("Client: invio stringa %s\n",buff);
-			write(sd,buff,sizeof(buff));
-			printf("Inserire stringa, EOF per terminare: \n");
-		}
+	}
 	//while
 	printf("\nClient: termino...\n");
 	exit(0);

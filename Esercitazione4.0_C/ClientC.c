@@ -58,40 +58,40 @@ int main(int argc, char *argv[])
 
 	/* CORPO DEL CLIENT:
 	ciclo di accettazione di richieste da utente ------- */
-		int bsize=atoi(argv[3]);
-		char buff[bsize];
-		/* CREAZIONE SOCKET ------------------------------------ */
-		sd=socket(AF_INET, SOCK_STREAM, 0);
-		if(sd<0) {perror("apertura socket"); exit(1);}
-		printf("Client: creata la socket sd=%d\n", sd);
+	int bsize=atoi(argv[3]);
+	char buff[bsize];
+	/* CREAZIONE SOCKET ------------------------------------ */
+	sd=socket(AF_INET, SOCK_STREAM, 0);
+	if(sd<0) {perror("apertura socket"); exit(1);}
+	printf("Client: creata la socket sd=%d\n", sd);
 
-		/* Operazione di BIND implicita nella connect */
-		if(connect(sd,(struct sockaddr *) &servaddr, sizeof(struct sockaddr))<0)
-		{perror("connect"); exit(1);}
-		printf("Client: connect ok\n");
-		printf("Inserire nome file, EOF per terminare: \n");
-		while(gets(nomefile)){
-			
-			printf("File da aprire: __%s__\n", nomefile);
+	/* Operazione di BIND implicita nella connect */
+	if(connect(sd,(struct sockaddr *) &servaddr, sizeof(struct sockaddr))<0)
+	{perror("connect"); exit(1);}
+	printf("Client: connect ok\n");
+	printf("Inserire nome file, EOF per terminare: \n");
+	while(gets(nomefile)){
 
-					
-					if((fd_sorg=open(nomefile, O_RDONLY))<0){
-						perror("open file sorgente"); 
-						printf("Inserire nome file, EOF per terminare: \n");
-						continue;
-					}
-					printf("Invio file: \n");
-					gettimeofday(&start, NULL);
-					while((nread=read(fd_sorg, buff, bsize))>0){
-			//stampa
-								write(sd,buff,nread);	//invio
-							}
-					// secondi e microsecondi
-					gettimeofday(&end, NULL);
-					printf("Tempo di trasferimento: %ld microsecondi\n",(end.tv_usec-start.tv_usec));
-					printf("\nClient: termino...\n");
-						exit(0);
+		printf("File da aprire: __%s__\n", nomefile);
+
+
+		if((fd_sorg=open(nomefile, O_RDONLY))<0){
+			perror("open file sorgente");
+			printf("Inserire nome file, EOF per terminare: \n");
+			continue;
 		}
+		printf("Invio file: \n");
+		gettimeofday(&start, NULL);
+		while((nread=read(fd_sorg, buff, bsize))>0){
+			//stampa
+			write(sd,buff,nread);	//invio
+		}
+		// secondi e microsecondi
+		gettimeofday(&end, NULL);
+		printf("Tempo di trasferimento: %ld microsecondi\n",(end.tv_usec-start.tv_usec));
+		printf("\nClient: termino...\n");
+		exit(0);
+	}
 	//while
 	printf("\nClient: termino...\n");
 	exit(0);

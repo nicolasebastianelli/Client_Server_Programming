@@ -30,9 +30,9 @@ char carattere;
 
 /********************************************************/
 void gestore(int signo){
-  int stato;
-  printf("esecuzione gestore di SIGCHLD\n");
-  wait(&stato);
+	int stato;
+	printf("esecuzione gestore di SIGCHLD\n");
+	wait(&stato);
 }
 /********************************************************/
 
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 {
 	int  listen_sd, conn_sd;
 	int port, len,nread,i,num;
-	char c,buff[STRINGA_RICEZIONE_SERVER],buff2[STRINGA_RICEZIONE_SERVER];
+	char buff[STRINGA_RICEZIONE_SERVER];
 	const int on = 1;
 	struct sockaddr_in cliaddr, servaddr;
 	struct hostent *host;
@@ -95,15 +95,15 @@ int main(int argc, char **argv)
 	printf("Server: listen ok\n");
 
 	/* AGGANCIO GESTORE PER EVITARE FIGLI ZOMBIE,
-	* Quali altre primitive potrei usare? E' portabile su tutti i sistemi?
-	* Pregi/Difetti?
-	* Alcune risposte le potete trovare nel materiale aggiuntivo!
-	*/
+	 * Quali altre primitive potrei usare? E' portabile su tutti i sistemi?
+	 * Pregi/Difetti?
+	 * Alcune risposte le potete trovare nel materiale aggiuntivo!
+	 */
 	signal(SIGCHLD, gestore);
 
 	/* CICLO DI RICEZIONE RICHIESTE --------------------------------------------- */
 	for(;;){
-	  	len=sizeof(cliaddr);
+		len=sizeof(cliaddr);
 		if((conn_sd=accept(listen_sd,(struct sockaddr *)&cliaddr,&len))<0){
 			if (errno==EINTR){
 				perror("Forzo la continuazione della accept");
@@ -112,41 +112,41 @@ int main(int argc, char **argv)
 			else exit(1);
 		}
 
-			if (fork()==0){ // figlio
-						close(listen_sd);
-						host=gethostbyaddr( (char *) &cliaddr.sin_addr, sizeof(cliaddr.sin_addr), AF_INET);
-									if (host == NULL){
-										printf("client host information not found\n"); continue;
-									}
-									else printf("Server (figlio): host client e' %s \n", host->h_name);
-						read(conn_sd,&str1,sizeof(str1));
-						read(conn_sd,&str2.carattere,sizeof(char));
-						read(conn_sd,&str2.intero,sizeof(int));
-						read(conn_sd,&len,sizeof(int));
-						str2.stringa=(char*)malloc(len*sizeof(char));
-						read(conn_sd,str2.stringa,len);
-						printf("Ricevuta struttura1 con %c %d %s\n",str1.carattere,str1.intero,str1.stringa);
-						printf("Ricevuta struttura2 con %c %d %s\n",str2.carattere,str2.intero,str2.stringa);
-						free(str2.stringa);
-						printf("------------Inizio parte 2:------------\n");
-						sleep(10);
-						while((nread=read(conn_sd,buff,sizeof(char)*STRINGA_RICEZIONE_SERVER))>0){
-							printf("Figlio per %s, ricezione stringhe:\n",host->h_name);
-							
-							for( i =0 ; i<nread;i++){
-								printf("%c",buff[i]);
-								if(buff[i]=='\0'){
-									printf("\n");
-									
-								}
-							}
-							sleep(10);
-						}
-						printf("Server (figlio:%s): termino\n",host->h_name);
-						exit(1);
+		if (fork()==0){ // figlio
+			close(listen_sd);
+			host=gethostbyaddr( (char *) &cliaddr.sin_addr, sizeof(cliaddr.sin_addr), AF_INET);
+			if (host == NULL){
+				printf("client host information not found\n"); continue;
 			}
+			else printf("Server (figlio): host client e' %s \n", host->h_name);
+			read(conn_sd,&str1,sizeof(str1));
+			read(conn_sd,&str2.carattere,sizeof(char));
+			read(conn_sd,&str2.intero,sizeof(int));
+			read(conn_sd,&len,sizeof(int));
+			str2.stringa=(char*)malloc(len*sizeof(char));
+			read(conn_sd,str2.stringa,len);
+			printf("Ricevuta struttura1 con %c %d %s\n",str1.carattere,str1.intero,str1.stringa);
+			printf("Ricevuta struttura2 con %c %d %s\n",str2.carattere,str2.intero,str2.stringa);
+			free(str2.stringa);
+			printf("------------Inizio parte 2:------------\n");
+			sleep(10);
+			while((nread=read(conn_sd,buff,sizeof(char)*STRINGA_RICEZIONE_SERVER))>0){
+				printf("Figlio per %s, ricezione stringhe:\n",host->h_name);
 
+				for( i =0 ; i<nread;i++){
+					printf("%c",buff[i]);
+					if(buff[i]=='\0'){
+						printf("\n");
+
+					}
+				}
+				sleep(10);
+			}
+			printf("Server (figlio:%s): termino\n",host->h_name);
+			exit(1);
 		}
-		close(conn_sd);  // padre chiude socket di connessione non di scolto
-	} // ciclo for infinito
+
+	}
+	close(conn_sd);  // padre chiude socket di connessione non di scolto
+} // ciclo for infinito
 

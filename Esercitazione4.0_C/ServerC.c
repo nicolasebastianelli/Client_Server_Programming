@@ -20,24 +20,23 @@
 
 /********************************************************/
 void gestore(int signo){
-  int stato;
-  printf("esecuzione gestore di SIGCHLD\n");
-  wait(&stato);
+	int stato;
+	printf("esecuzione gestore di SIGCHLD\n");
+	wait(&stato);
 }
 /********************************************************/
 
 int main(int argc, char **argv)
 {
 	int  listen_sd, conn_sd;
-	int port, len,nread,i,num,ntot,T1,T2;
-	char c;
+	int port, len,nread,num,ntot;
 	const int on = 1;
 	struct sockaddr_in cliaddr, servaddr;
 	struct hostent *host;
 	struct timeval start;
 	struct timeval end;
-	
-	
+
+
 
 	/* CONTROLLO ARGOMENTI ---------------------------------- */
 	if(argc!=3){
@@ -89,15 +88,15 @@ int main(int argc, char **argv)
 	printf("Server: listen ok\n");
 
 	/* AGGANCIO GESTORE PER EVITARE FIGLI ZOMBIE,
-	* Quali altre primitive potrei usare? E' portabile su tutti i sistemi?
-	* Pregi/Difetti?
-	* Alcune risposte le potete trovare nel materiale aggiuntivo!
-	*/
+	 * Quali altre primitive potrei usare? E' portabile su tutti i sistemi?
+	 * Pregi/Difetti?
+	 * Alcune risposte le potete trovare nel materiale aggiuntivo!
+	 */
 	signal(SIGCHLD, gestore);
 
 	/* CICLO DI RICEZIONE RICHIESTE --------------------------------------------- */
 	for(;;){
-	  	len=sizeof(cliaddr);
+		len=sizeof(cliaddr);
 		if((conn_sd=accept(listen_sd,(struct sockaddr *)&cliaddr,&len))<0){
 			if (errno==EINTR){
 				perror("Forzo la continuazione della accept");
@@ -106,29 +105,29 @@ int main(int argc, char **argv)
 			else exit(1);
 		}
 
-			if (fork()==0){ // figlio
-						close(listen_sd);
-						ntot=0;
-						host=gethostbyaddr( (char *) &cliaddr.sin_addr, sizeof(cliaddr.sin_addr), AF_INET);
-									if (host == NULL){
-										printf("client host information not found\n"); continue;
-									}
-									else printf("Server (figlio): host client e' %s \n", host->h_name);	
-									sleep(5);
-									gettimeofday(&start, NULL);
-									while((nread=read(conn_sd, buff, bsize))>0){
-												ntot+=nread;
-									}
-									gettimeofday(&end, NULL);
-									printf("Tempo di trasferimento: %ld microsecondi\n",(end.tv_usec-start.tv_usec));
-									printf("Dimensione del buffer: %d byte\n",bsize);
-									printf("Dimensione del file: %d byte\n",ntot);
-									
-						printf("Server (figlio:%s): termino\n",host->h_name);
-						exit(1);
+		if (fork()==0){ // figlio
+			close(listen_sd);
+			ntot=0;
+			host=gethostbyaddr( (char *) &cliaddr.sin_addr, sizeof(cliaddr.sin_addr), AF_INET);
+			if (host == NULL){
+				printf("client host information not found\n"); continue;
 			}
+			else printf("Server (figlio): host client e' %s \n", host->h_name);
+			sleep(5);
+			gettimeofday(&start, NULL);
+			while((nread=read(conn_sd, buff, bsize))>0){
+				ntot+=nread;
+			}
+			gettimeofday(&end, NULL);
+			printf("Tempo di trasferimento: %ld microsecondi\n",(end.tv_usec-start.tv_usec));
+			printf("Dimensione del buffer: %d byte\n",bsize);
+			printf("Dimensione del file: %d byte\n",ntot);
 
+			printf("Server (figlio:%s): termino\n",host->h_name);
+			exit(1);
 		}
-		close(conn_sd);  // padre chiude socket di connessione non di scolto
-	} // ciclo for infinito
+
+	}
+	close(conn_sd);  // padre chiude socket di connessione non di scolto
+} // ciclo for infinito
 
