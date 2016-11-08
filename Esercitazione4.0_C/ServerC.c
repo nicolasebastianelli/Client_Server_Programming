@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 				ntot+=nread;
 			}
 			gettimeofday(&end, NULL);
-			printf("Tempo di trasferimento: %ld microsecondi\n",(end.tv_usec-start.tv_usec));
+			printf("Tempo di trasferimento: %ld secondi e %ld millisecondi\n",(end.tv_sec-start.tv_sec),(end.tv_usec-start.tv_usec)/1000);
 			printf("Dimensione del buffer: %d byte\n",bsize);
 			printf("Dimensione del file: %d byte\n",ntot);
 

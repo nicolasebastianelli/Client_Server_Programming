@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 		}
 		// secondi e microsecondi
 		gettimeofday(&end, NULL);
-		printf("Tempo di trasferimento: %ld microsecondi\n",(end.tv_usec-start.tv_usec));
+		printf("Tempo di trasferimento: %ld secondi e %ld millisecondi\n",(end.tv_sec-start.tv_sec),(end.tv_usec-start.tv_usec)/1000);
 		printf("\nClient: termino...\n");
 		exit(0);
 	}
