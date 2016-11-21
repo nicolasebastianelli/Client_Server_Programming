@@ -10,7 +10,7 @@ class Client {
 	public static void main(String[] args) {
 		int REGISTRYPORT = -1;
 	    String registryHost = "localhost";					
-	    String serviceName = "Server";
+	    String serviceName = "ServerN";
 	    BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 	
 		// Controllo dei parametri della riga di comando
@@ -55,7 +55,7 @@ class Client {
 					System.out.print("Nome del file da sovrascrivvere?: ");
 					while (ok != true){
 						nf = stdIn.readLine();
-						if(nf.endsWith(".txt")){
+						if(!nf.endsWith(".txt")){
 							System.out.println("Non è un file di testo");
 							System.out.print("Nome del file da sovrascrivvere?: ");
 							continue;
@@ -82,7 +82,7 @@ class Client {
 					System.out.print("Parola da contare?: ");
 					parola = stdIn.readLine();	
 					int[] res=serverRMI.conta_fileTesto(nf, parola);
-					System.out.println("Numero di caratteri: "+res[2]+"\nNumero di parole: "+res[1]+"\nNumero di righe: "+res[0]+"\nNumero di occorrenze della parola "+parola+": "+res[3]);
+					System.out.println("Numero di caratteri: "+res[0]+"\nNumero di parole: "+res[1]+"\nNumero di righe: "+res[2]+"\nNumero di occorrenze della parola "+parola+": "+res[3]);
 				} // P=Programma
 				
 				else System.out.println("Servizio non disponibile");

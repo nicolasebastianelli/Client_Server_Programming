@@ -31,7 +31,7 @@ public class ServerImpl extends UnicastRemoteObject implements
 			System.out.println("File aperto: " + nomeFile);
 			while((buff=in.readLine()) != null){
 				ris[0]+=buff.length()+1;
-				wstr=buff.split("[,\\s\\-:\\?]");
+				wstr=buff.split("[,\\s\\-:\\?\n]");
 				ris[1]+=wstr.length;
 				ris[2]++;	
 				for(int i=0; i<wstr.length;i++){
@@ -82,7 +82,7 @@ public class ServerImpl extends UnicastRemoteObject implements
 
 		int REGISTRYPORT = -1;
 		String registryHost = "localhost";
-		String serviceName = "Server";		//lookup name...
+		String serviceName = "ServerN";		//lookup name...
 		
 		if(args.length != 1){
 			System.out.println("Sintassi: registryPort");
