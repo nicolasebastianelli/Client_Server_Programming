@@ -1,3 +1,4 @@
+//Nicola Sebastianelli 0000722894 Esercitazione 6
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,7 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ServerImpl extends UnicastRemoteObject implements
-		Server {
+		RemOp {
 	
 	private static final long serialVersionUID = -7544080675853750240L;
 
@@ -26,12 +27,13 @@ public class ServerImpl extends UnicastRemoteObject implements
 		String buff;
 		String[] wstr;
 		BufferedReader in = null;
+		System.out.println("Richiesta conta su file: " + nomeFile+" con parola: "+parola);
 		try {
 			in = new BufferedReader(new FileReader(nomeFile));
 			System.out.println("File aperto: " + nomeFile);
 			while((buff=in.readLine()) != null){
 				ris[0]+=buff.length()+1;
-				wstr=buff.split("[,\\s\\-:\\?\n]");
+				wstr=buff.split("[,\\s\\-:\\?]");
 				ris[1]+=wstr.length;
 				ris[2]++;	
 				for(int i=0; i<wstr.length;i++){
@@ -40,19 +42,23 @@ public class ServerImpl extends UnicastRemoteObject implements
 				}
 			}
 			in.close();
+			System.out.println("File chiuso: " + nomeFile);
 		} catch (Exception e) {
-			throw new RemoteException();	
+			System.out.println("File chiuso: " + nomeFile);
+			System.out.println("Invio: [-1,-1,-1,-1]");
+			return new int[]{-1,-1,-1,-1};
 		}
+		System.out.println("Invio: ["+ris[0]+","+ris[1]+","+ris[2]+","+ris[3]+"]");
 		return ris;
 	}
 	
 	public String[] rinomina_file(String nomeDir, String old_nomeFile, String new_nomeFile) throws RemoteException {
 		// File (or directory) with old name
+		System.out.println("Richiesta di rinomina del file: " +old_nomeFile+" nel direttorio: "+nomeDir+" con nuovo nome: "+new_nomeFile);
 		File dir = new File(nomeDir);
-		File file = new File(nomeDir+old_nomeFile);
+		File file = new File(nomeDir+"/"+old_nomeFile);
 		File[] listOfFile;
-		String[] res = new String[256];
-		File file2 = new File(nomeDir+new_nomeFile);
+		File file2 = new File(nomeDir+"/"+new_nomeFile);
 		if (!dir.isDirectory())
 			throw new RemoteException();
 		if (!file.exists())
@@ -61,7 +67,7 @@ public class ServerImpl extends UnicastRemoteObject implements
 		   throw new RemoteException();
 
 		boolean success = file.renameTo(file2);
-
+		String[] res = new String[dir.listFiles().length];
 		if (!success) {
 			throw new RemoteException();
 		}
@@ -70,6 +76,7 @@ public class ServerImpl extends UnicastRemoteObject implements
 			for (int i = 0; i < listOfFile.length; i++) {
 				res[i]=listOfFile[i].getName();
 			}
+			System.out.println("Invio lista dei file nella directory");
 			return res;
 		}
 			
