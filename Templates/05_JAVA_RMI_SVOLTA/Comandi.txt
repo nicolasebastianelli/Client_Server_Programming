@@ -1,0 +1,10 @@
+
+javac *.java   
+
+rmic -vcompat RMI_Server   
+
+rmiregistry “registryPort”
+
+java RMI_Server “registryPort”
+
+java RMI_Client “serverAddr” “registryPort”
